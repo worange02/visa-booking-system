@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Anda Malabo - Visa Booking Form</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        h2 {
+            color: #2c3e50;
+            margin-top: 30px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .required::after {
+            content: " *";
+            color: #e74c3c;
+        }
+        
+        .dates-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .calculated-fields {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+        }
+        
+        .calculated-fields div {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .calculated-fields strong {
+            color: #2c3e50;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: #27ae60;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transform: translateX(120%);
+            transition: transform 0.3s;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.error {
+            background: #e74c3c;
+        }
+        
+        .policy-note {
+            background: #f1f8ff;
+            border: 1px solid #d1e6ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .policy-note h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        .form-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .booking-summary {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .disclaimer {
+            background: #ffebee;
+            border: 2px solid #ef5350;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .disclaimer h3 {
+            color: #d32f2f;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hotel Anda Malabo - Visa Booking Request</h1>
+        
+        <!-- Visa Purpose Disclaimer -->
+        <div class="disclaimer">
+            <h3>⚠️ IMPORTANT DISCLAIMER</h3>
+            <p><strong>This booking is for VISA APPLICATION PURPOSES ONLY</strong></p>
+            <p>This is NOT an actual hotel reservation. The generated document is solely for visa application requirements.</p>
+            <p>No actual booking will be made at the hotel. No payment is required or will be processed.</p>
+        </div>
+        
+        <!-- Booking Summary -->
+        <div class="booking-summary">
+            <h3>Visa Document Information</h3>
+            <p><strong>Document Type:</strong> Hotel Reservation Confirmation for Visa</p>
+            <p><strong>Room Type:</strong> Classic Queen (98,000 CFA per night - for document purposes only)</p>
+            <p><strong>Note:</strong> This generates an Excel document in the exact format required by your original template</p>
+        </div>
+        
+        <!-- Guest Information -->
+        <div class="form-section">
+            <h2>1. Guest Information (For Visa Application)</h2>
+            
+            <div class="form-group">
+                <label class="required">Guest Full Name (as in passport)</label>
+                <input type="text" id="guestName" placeholder="Enter guest's full name as in passport" required>
+                <small>This name will appear in the visa booking confirmation document</small>
+            </div>
+            
+            <div class="form-group">
+                <label class="required">Contact Email Address</label>
+                <input type="email" id="email" placeholder="email@company.com" required>
+                <small>This email will receive the visa booking document</small>
+            </div>
+        </div>
+        
+        <!-- Company Information -->
+        <div class="form-section">
+            <h2>2. Company Information</h2>
+            
+            <div class="form-group">
+                <label class="required">Company/Organization Name</label>
+                <input type="text" id="company" placeholder="Enter company/organization name" required>
+                <small>The company name will be marked on the generated Excel file</small>
+            </div>
+            
+            <div class="form-group">
+                <label>Visa Application Notes / Remarks</label>
+                <input type="text" id="remark" placeholder="Optional notes for visa application">
+                <small>These remarks will be added to the booking document</small>
+            </div>
+        </div>
+        
+        <!-- Booking Dates -->
+        <div class="form-section">
+            <h2>3. Proposed Stay Dates (For Visa Application)</h2>
+            
+            <div class="dates-section">
+                <div class="form-group">
+                    <label class="required">Proposed Arrival Date</label>
+                    <input type="date" id="arrivalDate" required>
+                    <small>Proposed check-in date for visa application</small>
+                </div>
+                
+                <div class="form-group">
+                    <label class="required">Proposed Departure Date</label>
+                    <input type="date" id="departureDate" required>
+                    <small>Proposed check-out date for visa application</small>
+                </div>
+            </div>
+            
+            <!-- Calculated Fields -->
+            <div class="calculated-fields">
+                <div>
+                    <span>Number of Nights (Document Purpose):</span>
+                    <strong id="nightsCount">0</strong>
+                </div>
+                <div>
+                    <span>Room Rate (for document):</span>
+                    <strong>98,000 CFA</strong>
+                </div>
+                <div>
+                    <span>Total Amount (for document):</span>
+                    <strong id="totalAmount">0 CFA</strong>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Room Information -->
+        <div class="form-section">
+            <h2>4. Document Details</h2>
+            
+            <div class="form-group">
+                <label>Room Type (Fixed for Document)</label>
+                <input type="text" id="roomType" value="Classic Queen" readonly style="background-color: #f0f0f0;">
+                <small>Room type as shown in visa document</small>
+            </div>
+            
+            <div class="form-group">
+                <label>Number of Rooms (Document)</label>
+                <input type="number" id="quantity" value="1" min="1" max="10">
+                <small>Number of rooms shown in visa document</small>
+            </div>
+        </div>
+        
+        <!-- Submit Button -->
+        <div class="button-group">
+            <button type="button" class="btn-success" onclick="submitBooking()">Generate Visa Booking Document</button>
+            <button type="button" class="btn-secondary" onclick="resetForm()">Reset Form</button>
+        </div>
+        
+        <!-- Submission Notes -->
+        <div class="policy-note" style="margin-top: 30px;">
+            <h4>What happens after submission?</h4>
+            <p><strong>Backend Processing:</strong> Our system will automatically:</p>
+            <ol>
+                <li>Load your original Excel template from backend</li>
+                <li>Populate ONLY the following fields (keeping all other content unchanged):</li>
+                <ul>
+                    <li>Guest Name (Cells J5, J19, D22)</li>
+                    <li>Booking Date (Cell J8)</li>
+                    <li>Confirmation Number (Cell J17)</li>
+                    <li>Company Name (Cell B7)</li>
+                    <li>Email Address (Cell I9)</li>
+                    <li>Remarks (Cell I10)</li>
+                    <li>Arrival Date (Cell H22)</li>
+                    <li>Departure Date (Cell K22)</li>
+                    <li>Number of Nights (Cell T22)</li>
+                    <li>Total Amount (Cell Z22 - formula will be preserved)</li>
+                </ul>
+                <li>Generate a unique confirmation number</li>
+                <li>Mark the Excel file with company name and contact email</li>
+                <li>Generate a print-ready Excel file</li>
+                <li>Store the document in backend for review</li>
+            </ol>
+            <p><strong>Important:</strong> This is for VISA APPLICATION ONLY. No actual hotel booking is made.</p>
+        </div>
+    </div>
+    
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+    
+    <script>
+        // Room rate (fixed for document)
+        const roomRate = 98000;
+        
+        // Initialize form
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 30); // Default 30 days for visa
+            
+            // Format dates for input fields
+            document.getElementById('arrivalDate').value = formatDateForInput(today);
+            document.getElementById('departureDate').value = formatDateForInput(tomorrow);
+            
+            // Calculate initial nights and total
+            calculateNights();
+            
+            // Add event listeners
+            document.getElementById('arrivalDate').addEventListener('change', calculateNights);
+            document.getElementById('departureDate').addEventListener('change', calculateNights);
+            document.getElementById('quantity').addEventListener('change', calculateNights);
+        });
+        
+        // Format date for input field (YYYY-MM-DD)
+        function formatDateForInput(date) {
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        
+        // Calculate nights between dates
+        function calculateNights() {
+            const arrival = document.getElementById('arrivalDate').value;
+            const departure = document.getElementById('departureDate').value;
+            const quantity = parseInt(document.getElementById('quantity').value) || 1;
+            
+            if (arrival && departure) {
+                const arrivalDate = new Date(arrival);
+                const departureDate = new Date(departure);
+                
+                // Calculate difference in days
+                const timeDiff = departureDate.getTime() - arrivalDate.getTime();
+                const nights = Math.max(Math.floor(timeDiff / (1000 * 3600 * 24)), 1);
+                
+                // Update display
+                document.getElementById('nightsCount').textContent = nights;
+                const totalAmount = nights * roomRate * quantity;
+                document.getElementById('totalAmount').textContent = 
+                    totalAmount.toLocaleString() + ' CFA';
+            }
+        }
+        
+        // Show notification
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = 'notification';
+            
+            if (isError) {
+                notification.classList.add('error');
+            }
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+        
+        // Validate form
+        function validateForm() {
+            const guestName = document.getElementById('guestName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const company = document.getElementById('company').value.trim();
+            const arrivalDate = document.getElementById('arrivalDate').value;
+            const departureDate = document.getElementById('departureDate').value;
+            
+            if (!guestName) {
+                showNotification('Please enter guest name for visa application', true);
+                return false;
+            }
+            
+            if (!email || !isValidEmail(email)) {
+                showNotification('Please enter a valid email address', true);
+                return false;
+            }
+            
+            if (!company) {
+                showNotification('Please enter company/organization name', true);
+                return false;
+            }
+            
+            if (!arrivalDate || !departureDate) {
+                showNotification('Please select both arrival and departure dates', true);
+                return false;
+            }
+            
+            const arrival = new Date(arrivalDate);
+            const departure = new Date(departureDate);
+            
+            if (departure <= arrival) {
+                showNotification('Departure date must be after arrival date', true);
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Email validation
+        function isValidEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+        
+        // Submit booking to backend
+        async function submitBooking() {
+            if (!validateForm()) {
+                return;
+            }
+            
+            // Collect form data
+            const bookingData = {
+                guestName: document.getElementById('guestName').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                company: document.getElementById('company').value.trim(),
+                remark: document.getElementById('remark').value.trim() || "For visa application purposes only",
+                arrivalDate: document.getElementById('arrivalDate').value,
+                departureDate: document.getElementById('departureDate').value,
+                roomType: document.getElementById('roomType').value,
+                quantity: parseInt(document.getElementById('quantity').value) || 1,
+                purpose: "VISA_APPLICATION_ONLY"
+            };
+            
+            // Show submission notification
+            showNotification('Generating visa booking document... Please wait.');
+            
+            // Send to backend
+            try {
+                const response = await fetch('/generate-document', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(bookingData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Server error: ' + response.status);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showNotification('Visa booking document generated successfully!');
+                    
+                    // Show download link
+                    setTimeout(() => {
+                        showNotification(`Document saved as: ${result.filename}. You can view it in the backend.`);
+                    }, 1000);
+                    
+                    // Reset form after successful submission
+                    setTimeout(() => {
+                        resetForm();
+                    }, 3000);
+                } else {
+                    showNotification('Error: ' + result.message, true);
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Error generating document. Please try again.', true);
+            }
+        }
+        
+        // Reset form
+        function resetForm() {
+            document.getElementById('guestName').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('company').value = '';
+            document.getElementById('remark').value = '';
+            
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 30);
+            
+            document.getElementById('arrivalDate').value = formatDateForInput(today);
+            document.getElementById('departureDate').value = formatDateForInput(tomorrow);
+            document.getElementById('quantity').value = '1';
+            
+            calculateNights();
+            
+            showNotification('Form has been reset');
+        }
+    </script>
+</body>
+</html>

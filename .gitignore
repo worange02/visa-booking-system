@@ -1,0 +1,38 @@
+# Python 相关
+__pycache__/
+*.pyc
+venv/
+env/
+.python-version
+
+# 环境变量
+.env
+.env.local
+
+# 日志文件
+*.log
+
+# 系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 应用程序生成的文件
+generated_documents/
+uploads/
+daily_counters.json
+
+# Excel 文件（保留模板）
+*.xlsx
+!visa_booking_template.xlsx
+!test_output.xlsx
+
+# 临时文件
+*.tmp
+*.temp
+
+# 开发工具
+.vscode/
+.idea/
+*.swp
+*.swo

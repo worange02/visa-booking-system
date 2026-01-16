@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>签证预订系统 - 管理后台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .section-title::before {
+            content: "📊";
+            font-size: 1.2em;
+        }
+        
+        .documents-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .documents-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 0.5px;
+        }
+        
+        .documents-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+        
+        .documents-table tr:hover td {
+            background-color: #f8f9fa;
+        }
+        
+        .documents-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-download {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-download:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .btn-print {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-print:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #999;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .refresh-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+        
+        .cleanup-btn {
+            background: #dc3545;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        
+        .cleanup-btn:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+                padding: 20px;
+            }
+            
+            .documents-table {
+                font-size: 0.9em;
+            }
+            
+            .documents-table th,
+            .documents-table td {
+                padding: 10px 8px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>签证预订系统管理后台</h1>
+            <p>Visa Booking System Admin Panel</p>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="total-documents">0</div>
+                <div class="stat-label">总文档数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="today-documents">0</div>
+                <div class="stat-label">今日生成</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-companies">0</div>
+                <div class="stat-label">合作公司</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="total-amount">0</div>
+                <div class="stat-label">总金额(CFA)</div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 class="section-title">生成的Excel文档列表</h2>
+                <div style="display: flex; gap: 10px;">
+                    <button class="refresh-btn" onclick="loadDocuments()">🔄 刷新数据</button>
+                    <button class="cleanup-btn" onclick="cleanupDocuments()">🗑️ 清理48小时前文档</button>
+                </div>
+            </div>
+            
+            <div id="loading" class="loading" style="display: none;">
+                <p>📊 正在加载数据...</p>
+            </div>
+            
+            <div id="documents-container">
+                <div class="empty-state">
+                    <h3>📄 暂无文档数据</h3>
+                    <p>等待用户提交预订信息...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let documents = [];
+        
+        // 页面加载时获取数据
+        window.onload = function() {
+            loadDocuments();
+        };
+        
+        // 加载文档数据
+        async function loadDocuments() {
+            const loading = document.getElementById('loading');
+            const container = document.getElementById('documents-container');
+            
+            loading.style.display = 'block';
+            container.innerHTML = '';
+            
+            try {
+                const response = await fetch('/documents');
+                const data = await response.json();
+                
+                if (data.success) {
+                    documents = data.documents;
+                    renderDocuments(documents);
+                    updateStats(documents);
+                } else {
+                    container.innerHTML = '<div class="empty-state"><h3>❌ 加载失败</h3><p>无法获取文档数据</p></div>';
+                }
+            } catch (error) {
+                console.error('Error loading documents:', error);
+                container.innerHTML = '<div class="empty-state"><h3>❌ 网络错误</h3><p>请检查网络连接</p></div>';
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+        
+        // 渲染文档表格
+        function renderDocuments(docs) {
+            const container = document.getElementById('documents-container');
+            
+            if (docs.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>📄 暂无文档数据</h3>
+                        <p>等待用户提交预订信息...</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let tableHTML = `
+                <table class="documents-table">
+                    <thead>
+                        <tr>
+                            <th>确认号</th>
+                            <th>文件名</th>
+                            <th>公司名称</th>
+                            <th>邮箱地址</th>
+                            <th>客人姓名</th>
+                            <th>入住日期</th>
+                            <th>退房日期</th>
+                            <th>夜晚数</th>
+                            <th>总金额(CFA)</th>
+                            <th>生成时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            docs.forEach(doc => {
+                tableHTML += `
+                    <tr>
+                        <td><strong>${doc.id}</strong></td>
+                        <td>${doc.filename}</td>
+                        <td>${doc.company}</td>
+                        <td>${doc.email}</td>
+                        <td>${doc.guest_name}</td>
+                        <td>${doc.dates}</td>
+                        <td>${doc.nights}</td>
+                        <td>${doc.total_amount.toLocaleString()}</td>
+                        <td>${new Date(doc.generated_date).toLocaleString('zh-CN')}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="${doc.download_url}" class="btn btn-download">📥 下载</a>
+                                <a href="javascript:void(0)" onclick="printDocument('${doc.id}')" class="btn btn-print">🖨 打印</a>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = tableHTML;
+        }
+        
+        // 更新统计信息
+        function updateStats(docs) {
+            const today = new Date().toDateString();
+            const todayDocs = docs.filter(doc => new Date(doc.generated_date).toDateString() === today);
+            
+            const companies = new Set(docs.map(doc => doc.company));
+            const totalAmount = docs.reduce((sum, doc) => sum + doc.total_amount, 0);
+            
+            document.getElementById('total-documents').textContent = docs.length;
+            document.getElementById('today-documents').textContent = todayDocs.length;
+            document.getElementById('total-companies').textContent = companies.size;
+            document.getElementById('total-amount').textContent = totalAmount.toLocaleString();
+        }
+        
+        // 打印文档信息
+        async function printDocument(docId) {
+            try {
+                const response = await fetch(`/print/${docId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('✅ 文档信息已打印到控制台');
+                } else {
+                    alert('❌ 打印失败: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error printing document:', error);
+                alert('❌ 打印失败，请检查网络连接');
+            }
+        }
+        
+        // 清理超过48小时的文档
+        async function cleanupDocuments() {
+            if (!confirm('确定要清理超过48小时的所有文档吗？此操作不可撤销。')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/cleanup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`✅ 清理完成！剩余文档数量: ${result.remaining_documents}`);
+                    loadDocuments(); // 重新加载数据
+                } else {
+                    alert('❌ 清理失败: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error cleaning documents:', error);
+                alert('❌ 清理失败，请检查网络连接');
+            }
+        }
+        
+        // 每30秒自动刷新数据
+        setInterval(loadDocuments, 30000);
+    </script>
+</body>
+</html>
