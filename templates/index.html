@@ -148,11 +148,12 @@
             box-shadow: none;
         }
         
+        /* 更新通知样式以支持HTML */
         .notification {
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 15px 25px;
+            padding: 20px 25px;
             background: #27ae60;
             color: white;
             border-radius: 8px;
@@ -160,6 +161,8 @@
             transform: translateX(120%);
             transition: transform 0.3s;
             z-index: 1000;
+            max-width: 500px;
+            word-wrap: break-word;
         }
         
         .notification.show {
@@ -168,6 +171,26 @@
         
         .notification.error {
             background: #e74c3c;
+        }
+        
+        /* 通知中的链接样式 */
+        .notification a {
+            color: white !important;
+            text-decoration: underline !important;
+            font-weight: bold;
+            margin: 5px 0;
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .notification strong {
+            font-weight: bold;
+        }
+        
+        .notification br {
+            margin-bottom: 5px;
         }
         
         .policy-note {
@@ -435,6 +458,17 @@
             }, 5000);
         }
         
+        // 显示HTML通知
+        function showHTMLNotification(html) {
+            const notification = document.getElementById('notification');
+            notification.innerHTML = html;
+            notification.className = 'notification show';
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 10000);
+        }
+        
         // Validate form
         function validateForm() {
             const guestName = document.getElementById('guestName').value.trim();
@@ -518,20 +552,43 @@
                 
                 const result = await response.json();
                 
+                // 在 submitBooking() 函数中，修改成功处理部分：
                 if (result.success) {
-                    showNotification('Visa booking document generated successfully!');
+                    // 创建下载按钮
+                    const message = `
+                        ✅ 文档生成成功！<br><br>
+                        <strong>文件:</strong> ${result.document.filename}<br>
+                        <strong>确认号:</strong> ${result.document.id}<br>
+                        <strong>总金额:</strong> ${result.document.total_amount.toLocaleString()} CFA<br><br>
+                        <a href="${result.document.download_url}" target="_blank" style="
+                            background: #28a745;
+                            color: white;
+                            padding: 10px 20px;
+                            border-radius: 5px;
+                            text-decoration: none;
+                            display: inline-block;
+                            margin: 5px;
+                        ">📥 下载Excel文件</a>
+                        <a href="/admin" target="_blank" style="
+                            background: #007bff;
+                            color: white;
+                            padding: 10px 20px;
+                            border-radius: 5px;
+                            text-decoration: none;
+                            display: inline-block;
+                            margin: 5px;
+                        ">📊 查看管理后台</a>
+                    `;
                     
-                    // Show download link
-                    setTimeout(() => {
-                        showNotification(`Document saved as: ${result.filename}. You can view it in the backend.`);
-                    }, 1000);
+                    // 显示带HTML的通知
+                    showHTMLNotification(message);
                     
-                    // Reset form after successful submission
+                    // 重置表单
                     setTimeout(() => {
                         resetForm();
-                    }, 3000);
+                    }, 5000);
                 } else {
-                    showNotification('Error: ' + result.message, true);
+                    showNotification('❌ 错误: ' + result.message, true);
                 }
                 
             } catch (error) {
